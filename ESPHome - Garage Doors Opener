@@ -1,8 +1,8 @@
 esphome:
-  name: garage-doors
-  friendly_name: Modul Garaj
-esp8266:
-  board: nodemcuv2
+  name: esp32-relay-x2
+
+esp32:
+  board: esp32dev
 
 # Enable logging
 logger:
@@ -10,39 +10,35 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: "XXX"
+    key: "mdmA9z0YcrTsxaUg1cpdrscmYqVZ790FMisdVQICymM="
 
 ota:
+  password: "7d04d59fd8a6624bf20e584e9f4664f8"
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Fallback Hotspot"
-    password: XXX
+    ssid: "Garaj-Alarma Fallback Hotspot"
+    password: "HhODaGdQlzM3"
+
+
+
+# LED exposed as binary light
 output:
-  # Register the blue LED as a dimmable output ....
-  - platform: esp8266_pwm
-    id: blue_led
-    pin: D4
-    inverted: True
+  - platform: gpio
+    pin: GPIO23
+    id: output_led
 
 light:
-  # ... and then make a light out of it.
-  - platform: monochromatic
-    name: "Sonoff 4CH Blue LED"
-    output: blue_led
-    
-interval:
-  - interval: 1s
-    then:
-      if:
-        condition:
-          wifi.connected:
-        then:
-          - output.turn_on: blue_led
-        else:
-          - output.turn_off: blue_led
+  - platform: binary
+    id: light_led
+    name: LED
+    output: output_led
+
+# Relays exposed as switches
 
 
 
@@ -60,7 +56,7 @@ switch:
     id: virtual_lock
     optimistic: true
   - platform: gpio
-    pin: D5
+    pin: GPIO16
     name: "Door relay 1"
     id: door_relay_1
     internal: true
@@ -68,7 +64,7 @@ switch:
     - delay: 250ms
     - switch.turn_off: door_relay_1
   - platform: gpio
-    pin: D8
+    pin: GPIO17
     name: "Door relay 2"
     id: door_relay_2
     internal: true
@@ -96,7 +92,7 @@ binary_sensor:
     
   - platform: gpio
     pin:
-      number: D1
+      number: GPIO14
       inverted: true
       mode:
         input: true
@@ -132,7 +128,7 @@ binary_sensor:
                   state: ON
   - platform: gpio
     pin:
-      number: D2
+      number: GPIO18
       inverted: true
       mode:
         input: true
@@ -162,7 +158,7 @@ binary_sensor:
                   state: ON
   - platform: gpio
     pin:
-      number: D3
+      number: GPIO19
       inverted: true
       mode:
         input: true
@@ -198,7 +194,7 @@ binary_sensor:
                   state: ON
   - platform: gpio
     pin:
-      number: D6
+      number: GPIO21
       inverted: true
       mode:
         input: true
